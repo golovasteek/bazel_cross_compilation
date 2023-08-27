@@ -1,0 +1,7 @@
+# Rust ignore files
+
+rust/target
+
+# bazel files
+
+bazel-*

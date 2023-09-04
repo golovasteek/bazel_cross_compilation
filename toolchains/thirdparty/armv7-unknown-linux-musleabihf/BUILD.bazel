@@ -28,12 +28,10 @@ cc_toolchain_config(
     },
     compile_flags = [
         "-isystem", "toolchains/thirdparty/armv7-unknown-linux-musleabihf/armv7-linux-musleabihf/include/",
-        #"-isystem", "toolchains/thirdparty/armv7-unknown-linux-musleabihf/armv7-linux-musleabihf/sysroot/usr/include/",
-        #"-isystem", "toolchains/thirdparty/armv7-unknown-linux-musleabihf/armv7-linux-musleabihf/include/c++/11.2.0/x86_64-unknown-linux-musl",
     ],
-    # link_libs = [
-    #   "-lstdc++",
-    # ],
+    link_libs = [
+      "-lstdc++",
+    ],
 )
 
 filegroup(

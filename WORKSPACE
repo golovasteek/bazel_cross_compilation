@@ -34,3 +34,7 @@ crates_repository(
 load("@crate_index//:defs.bzl", "crate_repositories")
 
 crate_repositories()
+
+register_toolchains(
+    "//toolchains/thirdparty/x86_64-unknown-linux-musl:x86_64-linux-musl"
+)

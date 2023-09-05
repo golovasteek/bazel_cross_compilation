@@ -1,0 +1,5 @@
+[v1]
+"xargo 0.3.26 (registry+https://github.com/rust-lang/crates.io-index)" = [
+    "xargo",
+    "xargo-check",
+]

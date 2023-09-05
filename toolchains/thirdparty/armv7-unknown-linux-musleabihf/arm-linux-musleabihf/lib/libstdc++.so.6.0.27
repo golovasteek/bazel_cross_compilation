@@ -1,0 +1,6 @@
+/* cross-rs linker script
+ * this allows us to statically link libstdc++ to avoid segfaults
+ * https://github.com/cross-rs/cross/issues/902
+ */
+GROUP ( libstdc++.a AS_NEEDED( -lgcc -lc -lm ) )
+

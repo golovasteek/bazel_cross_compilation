@@ -13,3 +13,11 @@ platform(
     "@platforms//os:linux",
   ],
 )
+
+platform(
+  name = "aarch64-linux-musl",
+  constraint_values = [
+    "@platforms//cpu:aarch64",
+    "@platforms//os:linux",
+  ],
+)

@@ -74,6 +74,59 @@ toolchain(
 
 
 TOOLCHAIN_CONFIGS = {
+  "aarch64-macos": {
+    "aarch64-linux-musl": {
+      "target_triple": "aarch64-linux-musl",
+      "target_cpu": "aarch64",
+      "target_os": "linux",
+      "exec_os": "macos",
+      "exec_cpu": "aarch64",
+      "url": "https://github.com/messense/homebrew-macos-cross-toolchains/releases/download/v11.2.0-1/aarch64-unknown-linux-musl-aarch64-darwin.tar.gz",
+      "sha256": "e08ccc332bf75e4c5ef1f559835ec03b0d5df8bb28214b62f1cbd579385eff1f",
+      "strip_prefix": "aarch64-unknown-linux-musl",
+      "bin_prefix": "bin/aarch64-linux-musl-",
+      "compile_flags_template": """
+        "-nostdinc++",
+        "-isystem", "external/{repo_name}/aarch64-unknown-linux-musl/include/c++/11.2.0",
+        "-isystem", "external/{repo_name}/aarch64-unknown-linux-musl/include/c++/11.2.0/aarch64-unknown-linux-musl",
+        "-isystem", "external/{repo_name}/aarch64-unknown-linux-musl/sysroot/usr/include/",
+      """,
+    },
+    "x86_64-linux-musl": {
+      "target_triple": "x86_64-linux-musl",
+      "target_cpu": "x86_64",
+      "target_os": "linux",
+      "exec_os": "macos",
+      "exec_cpu": "aarch64",
+      "url": "https://github.com/messense/homebrew-macos-cross-toolchains/releases/download/v11.2.0-1/x86_64-unknown-linux-musl-aarch64-darwin.tar.gz",
+      "sha256": "a0ea82a122f33cff29347030e1e569c685ff332b655958e369784fff82e5bb78",
+      "strip_prefix": "x86_64-unknown-linux-musl",
+      "bin_prefix": "bin/x86_64-unknown-linux-musl-",
+      "compile_flags_template": """
+        "-nostdinc++",
+        "-isystem", "external/{repo_name}/x86_64-unknown-linux-musl/include/c++/11.2.0/",
+        "-isystem", "external/{repo_name}/x86_64-unknown-linux-musl/sysroot/usr/include/",
+        "-isystem", "external/{repo_name}/x86_64-unknown-linux-musl/include/c++/11.2.0/x86_64-unknown-linux-musl",
+      """,
+    },
+    "armv7-linux-musleabihf": {
+      "target_triple": "armv7-linux-musleabihf",
+      "target_cpu": "armv7",
+      "target_os": "linux",
+      "exec_os": "macos",
+      "exec_cpu": "aarch64",
+      "url": "https://github.com/messense/homebrew-macos-cross-toolchains/releases/download/v11.2.0-1/armv7-unknown-linux-musleabihf-aarch64-darwin.tar.gz",
+      "sha256": "cf2b9f8509297704e313e4191e7543c4dc6aff8b9239a878b86f3e7723a69315",
+      "strip_prefix": "armv7-unknown-linux-musleabihf",
+      "bin_prefix": "bin/armv7-linux-musleabihf-",
+      "compile_flags_template": """
+        "-nostdinc++",
+        "-isystem", "external/{repo_name}/armv7-unknown-linux-musleabihf/include/c++/11.2.0/",
+        "-isystem", "external/{repo_name}/armv7-unknown-linux-musleabihf/sysroot/usr/include/",
+        "-isystem", "external/{repo_name}/armv7-unknown-linux-musleabihf/include/c++/11.2.0/armv7-unknown-linux-musleabihf",
+      """,
+    },
+  },
   "x86_64-macos": {
     "aarch64-linux-musl": {
       "target_triple": "aarch64-linux-musl",
@@ -206,3 +259,4 @@ def _register_cpp_toolchain(exec_platform, target_triple):
 def register_cpp_toolchain(target_triple):
   _register_cpp_toolchain("x86_64-macos", target_triple)
   _register_cpp_toolchain("x86_64-linux", target_triple)
+  _register_cpp_toolchain("aarch64-macos", target_triple)

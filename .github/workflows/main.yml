@@ -26,5 +26,6 @@ jobs:
         run: >
           bazel build //...
           --platforms=//:${{ matrix.target_platform }}
+          --host_platform=//:x86_64-linux-musl
           --incompatible_enable_cc_toolchain_resolution
           --toolchain_resolution_debug=.*

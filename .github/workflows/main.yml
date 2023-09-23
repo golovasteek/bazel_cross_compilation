@@ -16,3 +16,5 @@ jobs:
           ls -a ${{ github.workspace }}
       - name: Setup bazelisk for Bazel builds
         uses: holvonix-open/setup-bazelisk@v0.6.1
+      - name: Build all
+        run: bazel build //...

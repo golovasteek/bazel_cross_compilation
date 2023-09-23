@@ -27,3 +27,4 @@ jobs:
           bazel build //...
           --platforms=//:${{ matrix.target_platform }}
           --incompatible_enable_cc_toolchain_resolution
+          --toolchain_resolution_debug=@rules_rust//rust:toolchain

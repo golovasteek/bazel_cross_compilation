@@ -1,0 +1,11 @@
+name: Bazel Build
+run-name: ${{ github.actor }} is building with bazel
+on: [push]
+jobs:
+  hello-world:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Hello from github actions"
+      - run: echo "The job is triggered by ${{ github.event_name }}"
+      - run: echo "OS is ${{ runner.os }}"
+      - run: echo branch name is ${{ github.ref }}

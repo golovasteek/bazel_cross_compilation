@@ -9,3 +9,5 @@ jobs:
       - run: echo "The job is triggered by ${{ github.event_name }}"
       - run: echo "OS is ${{ runner.os }}"
       - run: echo branch name is ${{ github.ref }}
+      - name: Checkout
+        uses: actions/checkout@v4.1.0

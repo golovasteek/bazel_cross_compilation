@@ -4,6 +4,12 @@ on: [push]
 jobs:
   hello-world:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target_platform:
+          - armv7-linux-musleabihf
+          - aarch64-linux-musl
+          - x86_64-linux-musl
     steps:
       - run: echo "Hello from github actions"
       - run: echo "The job is triggered by ${{ github.event_name }}"
@@ -15,6 +21,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: "~/.cache/bazel"
-          key: bazel
+          key: "bazel-${{ matrix.target_platform }}"
       - name: Build all
-        run: bazel build //...
+        run: >
+          bazel build //...
+          --platforms=//:${{ matrix.target_platform }}
+          --incompatible_enable_cc_toolchain_resolution

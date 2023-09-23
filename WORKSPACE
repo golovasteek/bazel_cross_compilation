@@ -12,6 +12,7 @@ rules_rust_dependencies()
 rust_repository_set(
   edition = "2021",
   name = "rust_repository_set_x86_64-linux-musl",
+  exec_triple = "x86_64-unknown-linux-gnu",
   target_settings = [
     "//:musl",
   ],

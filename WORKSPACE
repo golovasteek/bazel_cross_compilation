@@ -31,6 +31,9 @@ crates_repository(
       "//rust:Cargo.toml",
       "//rust/pure_rust_example:Cargo.toml",
     ],
+    supported_platform_triples = [
+      "x86_64-unknown-linux-musl"
+    ]
 )
 
 load("@crate_index//:defs.bzl", "crate_repositories")

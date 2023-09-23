@@ -13,4 +13,6 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: List files
         run: |
-          ls ${{ github.workspace }}
+          ls -a ${{ github.workspace }}
+      - name: Setup bazelisk for Bazel builds
+        uses: holvonix-open/setup-bazelisk@v0.6.1

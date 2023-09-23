@@ -1,4 +1,7 @@
-constraint_setting(name = "libc_version")
+constraint_setting(
+  name = "libc_version",
+  default_constraint_value = "gnu",
+)
 
 constraint_value(
     name = "musl",

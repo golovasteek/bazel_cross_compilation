@@ -11,10 +11,5 @@ jobs:
       - run: echo branch name is ${{ github.ref }}
       - name: Checkout
         uses: actions/checkout@v4.1.0
-      - name: List files
-        run: |
-          ls -a ${{ github.workspace }}
-      - name: Setup bazelisk for Bazel builds
-        uses: holvonix-open/setup-bazelisk@v0.6.1
       - name: Build all
         run: bazel build //...

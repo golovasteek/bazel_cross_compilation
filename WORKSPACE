@@ -5,12 +5,16 @@ http_archive(
     urls = ["https://github.com/bazelbuild/rules_rust/releases/download/0.26.0/rules_rust-v0.26.0.tar.gz"],
 )
 
-load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
+load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_repository_set")
 
 rules_rust_dependencies()
 
-rust_register_toolchains(
+rust_repository_set(
   edition = "2021",
+  name = "rust_repository_set_x86_64-linux-musl",
+  target_settings = [
+    "//:musl",
+  ],
   extra_target_triples = [
     "x86_64-unknown-linux-musl",
     "armv7-unknown-linux-musleabihf",

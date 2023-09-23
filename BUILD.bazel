@@ -8,6 +8,11 @@ constraint_value(
     constraint_setting = ":libc_version",
 )
 
+constraint_value(
+    name = "gnu",
+    constraint_setting = ":libc_version",
+)
+
 platform(
   name = "x86_64-linux-musl",
   constraint_values = [

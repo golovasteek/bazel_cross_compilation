@@ -11,5 +11,10 @@ jobs:
       - run: echo branch name is ${{ github.ref }}
       - name: Checkout
         uses: actions/checkout@v4.1.0
+      - name: Mount bazel cache
+        uses: actions/cache@v3
+        with:
+          path: "~/.cache/bazel"
+          key: bazel
       - name: Build all
         run: bazel build //...

@@ -1,0 +1,3 @@
+load(":cpp_toolchains.bzl", "declare_toolchains")
+
+declare_toolchains()

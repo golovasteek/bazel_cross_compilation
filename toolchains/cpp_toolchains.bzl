@@ -56,20 +56,6 @@ cc_toolchain(
     strip_files = ":all",
     toolchain_config = ":{target_triple}_toolchain_config",
 )
-
-toolchain(
-    name = "{target_triple}",
-    exec_compatible_with = [
-        "@platforms//os:{exec_os}",
-        "@platforms//cpu:{exec_cpu}",
-    ],
-    target_compatible_with = [
-        "@platforms//os:{target_os}",
-        "@platforms//cpu:{target_cpu}",
-    ],
-    toolchain = ":{target_triple}_toolchain",
-    toolchain_type = "@rules_cc//cc:toolchain_type",
-)
 """
 
 
@@ -238,14 +224,18 @@ TOOLCHAIN_CONFIGS = {
   },
 }
 
-
-def _register_cpp_toolchain(exec_platform, target_triple):
+def _get_config(exec_platform, target_triple):
   config = TOOLCHAIN_CONFIGS[exec_platform][target_triple]
   processed_config = dict(config)
 
   processed_config["repo_name"] = "cc_toolchain_{target_triple}-{exec_platform}".format(
     exec_platform=exec_platform, **config)
   processed_config["compile_flags"] = config["compile_flags_template"].format(**processed_config)
+
+  return processed_config
+
+def _register_cpp_toolchain(exec_platform, target_triple):
+  processed_config = _get_config(exec_platform, target_triple)
   http_archive(
     name = processed_config["repo_name"],
     sha256 = processed_config["sha256"],
@@ -253,10 +243,31 @@ def _register_cpp_toolchain(exec_platform, target_triple):
     strip_prefix = processed_config["strip_prefix"],
     build_file_content = BUILD_FILE_TEMPLATE.format(**processed_config),
   )
-  native.register_toolchains("@{repo_name}//:{target_triple}".format(**processed_config))
+
+  native.register_toolchains("//toolchains:{}".format(processed_config["repo_name"]))
 
 
-def register_cpp_toolchain(target_triple):
-  _register_cpp_toolchain("x86_64-macos", target_triple)
-  _register_cpp_toolchain("x86_64-linux", target_triple)
-  _register_cpp_toolchain("aarch64-macos", target_triple)
+def register_cpp_toolchains():
+  for exec_platform in TOOLCHAIN_CONFIGS:
+    for target_triple in TOOLCHAIN_CONFIGS[exec_platform]:
+      _register_cpp_toolchain(exec_platform, target_triple)
+
+
+def declare_toolchains():
+  for exec_platform in TOOLCHAIN_CONFIGS:
+    for target_triple in TOOLCHAIN_CONFIGS[exec_platform]:
+      config = _get_config(exec_platform, target_triple)
+      toolchain_name = config["repo_name"]
+      native.toolchain(
+          name = toolchain_name,
+          exec_compatible_with = [
+              "@platforms//os:{exec_os}".format(**config),
+              "@platforms//cpu:{exec_cpu}".format(**config),
+          ],
+          target_compatible_with = [
+              "@platforms//os:{target_os}".format(**config),
+              "@platforms//cpu:{target_cpu}".format(**config),
+          ],
+          toolchain = "@{repo_name}//:{target_triple}_toolchain".format(**config),
+          toolchain_type = "@rules_cc//cc:toolchain_type",
+      )

@@ -37,7 +37,6 @@ load("@crate_index//:defs.bzl", "crate_repositories")
 
 crate_repositories()
 
-load("//toolchains:cpp_toolchains.bzl", "register_cpp_toolchain")
-register_cpp_toolchain("aarch64-linux-musl")
-register_cpp_toolchain("x86_64-linux-musl")
-register_cpp_toolchain("armv7-linux-musleabihf")
+load("//toolchains:cpp_toolchains.bzl", "register_cpp_toolchains")
+register_cpp_toolchains()
+

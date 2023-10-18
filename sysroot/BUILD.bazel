@@ -1,0 +1,8 @@
+package(default_visibility = ["//visibility:public"])
+
+constraint_setting(name = "sysroot")
+
+constraint_value(
+    name = "unknown",
+    constraint_setting = ":sysroot",
+)

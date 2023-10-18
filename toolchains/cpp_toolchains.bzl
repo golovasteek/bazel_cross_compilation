@@ -131,6 +131,23 @@ TOOLCHAIN_CONFIGS = {
         "-isystem", "external/{repo_name}/aarch64-unknown-linux-musl/sysroot/usr/include/",
       """,
     },
+    "aarch64-linux-gnu": {
+      "target_triple": "aarch64-linux-gnu",
+      "target_cpu": "aarch64",
+      "target_os": "linux",
+      "exec_os": "macos",
+      "exec_cpu": "x86_64",
+      "url": "https://github.com/messense/homebrew-macos-cross-toolchains/releases/download/v11.2.0-1/aarch64-unknown-linux-gnu-x86_64-darwin.tar.gz",
+      "sha256": "ad7863d0129a7264d501b5e8bbf703b482e42900face4ad2e3e222f5d984fc13",
+      "strip_prefix": "aarch64-unknown-linux-gnu",
+      "bin_prefix": "bin/aarch64-linux-gnu-",
+      "compile_flags_template": """
+        "-nostdinc++",
+        "-isystem", "external/{repo_name}/aarch64-unknown-linux-gnu/include/c++/11.2.0",
+        "-isystem", "external/{repo_name}/aarch64-unknown-linux-gnu/include/c++/11.2.0/aarch64-unknown-linux-gnu",
+        "-isystem", "external/{repo_name}/aarch64-unknown-linux-gnu/sysroot/usr/include/",
+      """,
+    },
     "x86_64-linux-musl": {
       "target_triple": "x86_64-linux-musl",
       "target_cpu": "x86_64",
@@ -224,39 +241,58 @@ TOOLCHAIN_CONFIGS = {
   },
 }
 
-def _get_config(exec_platform, target_triple):
-  config = TOOLCHAIN_CONFIGS[exec_platform][target_triple]
+def _get_config(exec_platform, target_triple, configs):
+  config = configs[exec_platform][target_triple]
   processed_config = dict(config)
 
-  processed_config["repo_name"] = "cc_toolchain_{target_triple}-{exec_platform}".format(
-    exec_platform=exec_platform, **config)
+  if "target_libc" not in processed_config:
+    if "musl" in target_triple:
+      processed_config["target_libc"] = "//libc:musl"
+    else:
+      processed_config["target_libc"] = "//libc:gnu"
+  
+  if "target_sysroot" not in processed_config:
+    processed_config["target_sysroot"] = "//sysroot:unknown"
+
+  sanitized_sysroot = processed_config["target_sysroot"].replace("/", "_").replace(":", "-")
+  processed_config["repo_name"] = "cc_toolchain_{target_triple}-{exec_platform}_{sanitized_sysroot}".format(
+    exec_platform=exec_platform,
+    sanitized_sysroot=sanitized_sysroot,
+    **config)
   processed_config["compile_flags"] = config["compile_flags_template"].format(**processed_config)
 
   return processed_config
 
-def _register_cpp_toolchain(exec_platform, target_triple):
-  processed_config = _get_config(exec_platform, target_triple)
-  http_archive(
-    name = processed_config["repo_name"],
-    sha256 = processed_config["sha256"],
-    urls = [processed_config["url"]],
-    strip_prefix = processed_config["strip_prefix"],
-    build_file_content = BUILD_FILE_TEMPLATE.format(**processed_config),
-  )
 
-  native.register_toolchains("//toolchains:{}".format(processed_config["repo_name"]))
+def cpp_toolchains_from_config(configs):
+  for exec_platform in configs:
+    for target_triple in configs[exec_platform]:
+      processed_config = _get_config(exec_platform, target_triple, configs)
+      http_archive(
+        name = processed_config["repo_name"],
+        sha256 = processed_config["sha256"],
+        urls = [processed_config["url"]],
+        strip_prefix = processed_config["strip_prefix"],
+        build_file_content = BUILD_FILE_TEMPLATE.format(**processed_config),
+      )
+
+
+def register_cpp_toolchains_from_configs(configs, toolchain_package):
+  for exec_platform in configs:
+    for target_triple in configs[exec_platform]:
+      config = _get_config(exec_platform, target_triple, configs)
+      native.register_toolchains("{}:{}".format(toolchain_package, config["repo_name"]))
 
 
 def register_cpp_toolchains():
-  for exec_platform in TOOLCHAIN_CONFIGS:
-    for target_triple in TOOLCHAIN_CONFIGS[exec_platform]:
-      _register_cpp_toolchain(exec_platform, target_triple)
+  cpp_toolchains_from_config(TOOLCHAIN_CONFIGS)
+  register_cpp_toolchains_from_configs(TOOLCHAIN_CONFIGS, "//toolchains")
 
 
-def declare_toolchains():
-  for exec_platform in TOOLCHAIN_CONFIGS:
-    for target_triple in TOOLCHAIN_CONFIGS[exec_platform]:
-      config = _get_config(exec_platform, target_triple)
+def declare_toolchains_from_config(configs):
+  for exec_platform in configs:
+    for target_triple in configs[exec_platform]:
+      config = _get_config(exec_platform, target_triple, configs)
       toolchain_name = config["repo_name"]
       native.toolchain(
           name = toolchain_name,
@@ -267,7 +303,13 @@ def declare_toolchains():
           target_compatible_with = [
               "@platforms//os:{target_os}".format(**config),
               "@platforms//cpu:{target_cpu}".format(**config),
+              config["target_libc"],
+              config["target_sysroot"],
           ],
           toolchain = "@{repo_name}//:{target_triple}_toolchain".format(**config),
           toolchain_type = "@rules_cc//cc:toolchain_type",
       )
+
+
+def declare_toolchains():
+  declare_toolchains_from_config(TOOLCHAIN_CONFIGS)

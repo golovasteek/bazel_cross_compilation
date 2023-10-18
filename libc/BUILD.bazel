@@ -1,0 +1,13 @@
+package(default_visibility = ["//visibility:public"])
+
+constraint_setting(name = "libc")
+
+constraint_value(
+    name = "gnu",
+    constraint_setting = ":libc",
+)
+
+constraint_value(
+    name = "musl",
+    constraint_setting = ":libc",
+)

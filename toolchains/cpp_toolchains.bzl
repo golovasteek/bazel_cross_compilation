@@ -36,6 +36,8 @@ cc_toolchain_config(
     ],
     link_libs = [
       "-lstdc++",
+      "-lm",
+      "-ldl",
     ],
 )
 

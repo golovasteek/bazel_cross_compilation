@@ -20,6 +20,7 @@ platform(
     "@platforms//cpu:aarch64",
     "@platforms//os:linux",
     "//libc:musl",
+    "//sysroot:unknown",
   ],
 )
 
@@ -29,5 +30,23 @@ platform(
     "@platforms//cpu:aarch64",
     "@platforms//os:linux",
     "//libc:gnu",
+  ],
+)
+
+constraint_value(
+  name = "mipsel",
+  constraint_setting = "@platforms//cpu:cpu",
+  visibility = [
+    "//visibility:public",
+  ],
+)
+
+platform(
+  name = "mipsel-linux-musl",
+  constraint_values = [
+    ":mipsel",
+    "@platforms//os:linux",
+    "//libc:musl",
+    "//sysroot:unknown",
   ],
 )

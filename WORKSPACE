@@ -11,8 +11,8 @@ rules_rust_dependencies()
 
 rust_register_toolchains(edition = "2021")
 
-load("//toolchains:rust_toolchains.bzl", "rust_create_toolchains")
-rust_create_toolchains()
+# load("//toolchains:rust_toolchains.bzl", "rust_create_toolchains")
+# rust_create_toolchains()
 
 load("@rules_rust//crate_universe:repositories.bzl", "crate_universe_dependencies")
 

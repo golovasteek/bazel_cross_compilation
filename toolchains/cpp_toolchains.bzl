@@ -240,6 +240,24 @@ TOOLCHAIN_CONFIGS = {
         "-isystem", "external/{repo_name}/x86_64-buildroot-linux-musl/sysroot/usr/include/",
       """,
     },
+    "mipsel-linux-musl": {
+      "target_triple": "mipsel-linux-musl",
+      "target_cpu": "//:mipsel",
+      "target_os": "linux",
+      "exec_os": "linux",
+      "exec_cpu": "x86_64",
+      "url": "https://toolchains.bootlin.com/downloads/releases/toolchains/mips32el/tarballs/mips32el--musl--stable-2023.11-1.tar.bz2",
+      "sha256": "a76bdda55776c0b1a546ef20652b78134b96bdefa4f8cc792eb46d913df9138b",
+      "strip_prefix": "mips32el--musl--stable-2023.11-1",
+      "bin_prefix": "bin/mipsel-buildroot-linux-musl-",
+      "compile_flags_template": """
+        "-nostdinc++",
+        "-isystem", "external/{repo_name}/mipsel-buildroot-linux-musl/include/",
+        "-isystem", "external/{repo_name}/mipsel-buildroot-linux-musl/include/c++/12.3.0/",
+        "-isystem", "external/{repo_name}/mipsel-buildroot-linux-musl/include/c++/12.3.0/mipsel-buildroot-linux-musl",
+        "-isystem", "external/{repo_name}/mipsel-buildroot-linux-musl/sysroot/usr/include/",
+      """,
+    },
   },
 }
 
@@ -296,6 +314,10 @@ def declare_toolchains_from_config(configs):
     for target_triple in configs[exec_platform]:
       config = _get_config(exec_platform, target_triple, configs)
       toolchain_name = config["repo_name"]
+      target_cpu_constraint = config["target_cpu"]
+      if target_cpu_constraint[0] not in ['@', '/', ':']:
+          target_cpu_constraint = "@platforms//cpu:{}".format(target_cpu_constraint)
+
       native.toolchain(
           name = toolchain_name,
           exec_compatible_with = [
@@ -304,7 +326,7 @@ def declare_toolchains_from_config(configs):
           ],
           target_compatible_with = [
               "@platforms//os:{target_os}".format(**config),
-              "@platforms//cpu:{target_cpu}".format(**config),
+              target_cpu_constraint,
               config["target_libc"],
               config["target_sysroot"],
           ],
